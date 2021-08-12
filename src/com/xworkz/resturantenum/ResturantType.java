@@ -1,6 +1,6 @@
 package com.xworkz.resturantenum;
 
 public enum ResturantType {
-	DHARSINI,BAR,FAMILY
+	DHARSINI,BAR,FAMILY,Cafe
 
 }

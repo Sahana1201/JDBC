@@ -6,11 +6,16 @@ import com.xworkz.resturantenum.ResturantType;
 
 public class ResturantDTO implements Serializable {
 
+	private int id;
 	private String name;
 	private String location;
 	private String specialFood;
 	private boolean best;
 	private ResturantType type;
+
+	public ResturantDTO() {
+		super();
+	}
 
 	public ResturantDTO(String name, String location, String specialFood, boolean best, ResturantType type) {
 		super();
@@ -61,6 +66,14 @@ public class ResturantDTO implements Serializable {
 		this.type = type;
 	}
 
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -100,8 +113,10 @@ public class ResturantDTO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ResturantDTO [name=" + name + ", location=" + location + ", specialFood=" + specialFood + ", best="
-				+ best + ", type=" + type + "]";
+		return "ResturantDTO [id=" + id + ", name=" + name + ", location=" + location + ", specialFood=" + specialFood
+				+ ", best=" + best + ", type=" + type + "]";
 	}
+
 	
+
 }

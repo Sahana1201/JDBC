@@ -75,16 +75,7 @@ public class WebSeriesDAOImpl implements WebSeriesDAO {
 			PreparedStatement stm = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 			ResultSet resultSet = stm.executeQuery();
 			while (resultSet.next()) {
-				int id = resultSet.getInt("id");
-				String name = resultSet.getString("name");
-				int w_noOfEpisodes = resultSet.getInt("noOfEpisodes");
-				String w_streamedIn = resultSet.getString("streamedIn");
-				String w_gener = resultSet.getString("gener");
-				int w_yestAgeIndaNodbohudu = resultSet.getInt("yestAgeIndaNodbohudu");
-				WebSeriesDTO dto1 = new WebSeriesDTO(name, w_noOfEpisodes, StreamedInType.valueOf(w_streamedIn),
-						Genertype.valueOf(w_gener), w_yestAgeIndaNodbohudu);
-				dto1.setW_id(id);
-				collection.add(dto1);
+				createDTOFromResultSetValues(collection, resultSet);
 			}
 
 		} catch (SQLException e) {
@@ -107,16 +98,7 @@ public class WebSeriesDAOImpl implements WebSeriesDAO {
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				int id = resultSet.getInt("id");
-				String name = resultSet.getString("name");
-				int w_noOfEpisodes = resultSet.getInt("noOfEpisodes");
-				String w_streamedIn = resultSet.getString("streamedIn");
-				String w_gener = resultSet.getString("gener");
-				int w_yestAgeIndaNodbohudu = resultSet.getInt("yestAgeIndaNodbohudu");
-				WebSeriesDTO dto = new WebSeriesDTO(name, w_noOfEpisodes, StreamedInType.valueOf(w_streamedIn),
-						Genertype.valueOf(w_gener), w_yestAgeIndaNodbohudu);
-				dto.setW_id(id);
-				collection.add(dto);
+				createDTOFromResultSetValues(collection, resultSet);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -124,15 +106,40 @@ public class WebSeriesDAOImpl implements WebSeriesDAO {
 		return collection;
 	}
 
+	private void createDTOFromResultSetValues(Collection<WebSeriesDTO> collection, ResultSet resultSet)
+			throws SQLException {
+		int id = resultSet.getInt("id");
+		String name = resultSet.getString("name");
+		int w_noOfEpisodes = resultSet.getInt("noOfEpisodes");
+		String w_streamedIn = resultSet.getString("streamedIn");
+		String w_gener = resultSet.getString("gener");
+		int w_yestAgeIndaNodbohudu = resultSet.getInt("yestAgeIndaNodbohudu");
+		WebSeriesDTO dto = new WebSeriesDTO(name, w_noOfEpisodes, StreamedInType.valueOf(w_streamedIn),
+				Genertype.valueOf(w_gener), w_yestAgeIndaNodbohudu);
+		dto.setW_id(id);
+		collection.add(dto);
+	}
+
 	@Override
 	public Collection<WebSeriesDTO> findall(Predicate<WebSeriesDTO> predicate) {
-		Collection<WebSeriesDTO> temp = new ArrayList<WebSeriesDTO>();
-		this.collection.forEach(w -> {
-			if (predicate.test(w)) {
-				temp.add(w);
+		System.out.println("Find all data's from table");
+		Collection<WebSeriesDTO> optional = new ArrayList<WebSeriesDTO>();
+		try (Connection connection = DriverManager.getConnection(JDBCConstant.url, JDBCConstant.username,
+				JDBCConstant.password)) {
+			String query = "SELECT * FROM Webseries";
+			PreparedStatement statement = connection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				WebSeriesDTO dto = createResultSet(resultSet);
+				if (predicate.test(dto)) {
+					optional.add(dto);
+					break;
+				}
 			}
-		});
-		return temp;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return optional;
 
 	}
 
@@ -171,16 +178,7 @@ public class WebSeriesDAOImpl implements WebSeriesDAO {
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet resultSet = statement.executeQuery();
 			while (resultSet.next()) {
-				int id = resultSet.getInt("id");
-				String name = resultSet.getString("name");
-				int w_noOfEpisodes = resultSet.getInt("noOfEpisodes");
-				String w_streamedIn = resultSet.getString("streamedIn");
-				String w_gener = resultSet.getString("gener");
-				int w_yestAgeIndaNodbohudu = resultSet.getInt("yestAgeIndaNodbohudu");
-				WebSeriesDTO dto = new WebSeriesDTO(name, w_noOfEpisodes, StreamedInType.valueOf(w_streamedIn),
-						Genertype.valueOf(w_gener), w_yestAgeIndaNodbohudu);
-				dto.setW_id(id);
-				collection.add(dto);
+				createDTOFromResultSetValues(collection, resultSet);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -190,8 +188,37 @@ public class WebSeriesDAOImpl implements WebSeriesDAO {
 
 	@Override
 	public Optional<WebSeriesDTO> findone(Predicate<WebSeriesDTO> predicate) {
-		// TODO Auto-generated method stub
-		return null;
+
+		System.out.println("Find all data's from table using Predicate");
+		Optional<WebSeriesDTO> optional = Optional.empty();
+		try (Connection connection = DriverManager.getConnection(JDBCConstant.url, JDBCConstant.username,
+				JDBCConstant.password)) {
+			String query = "SELECT * FROM Webseries";
+			PreparedStatement statement = connection.prepareStatement(query);
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				WebSeriesDTO dto = createResultSet(resultSet);
+				if (predicate.test(dto)) {
+					optional = Optional.of(dto);
+					break;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return optional;
+	}
+
+	private WebSeriesDTO createResultSet(ResultSet resultSet) throws SQLException {
+		int id = resultSet.getInt("id");
+		String name = resultSet.getString("name");
+		int w_noOfEpisodes = resultSet.getInt("noOfEpisodes");
+		String w_streamedIn = resultSet.getString("streamedIn");
+		String w_gener = resultSet.getString("gener");
+		int w_yestAgeIndaNodbohudu = resultSet.getInt("yestAgeIndaNodbohudu");
+		WebSeriesDTO dto = new WebSeriesDTO(name, w_noOfEpisodes, StreamedInType.valueOf(w_streamedIn),
+				Genertype.valueOf(w_gener), w_yestAgeIndaNodbohudu);
+		return dto;
 	}
 
 	@Override

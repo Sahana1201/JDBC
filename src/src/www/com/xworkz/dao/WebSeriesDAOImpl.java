@@ -1,5 +1,6 @@
 package www.com.xworkz.dao;
 
+import java.beans.Customizer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -61,31 +62,53 @@ public class WebSeriesDAOImpl implements WebSeriesDAO {
 	}
 
 	@Override
-	public Collection<WebSeriesDTO> saveAll(Collection<WebSeriesDTO> collection) {
+	public void saveAll(Collection<WebSeriesDTO> collection) {
 
 		System.out.println("Saving dto in database");
+		Collection<WebSeriesDTO> col = new ArrayList<WebSeriesDTO>();
 
-		// Collection<WebSeriesDTO> dto = new ArrayList<WebSeriesDTO>();
 		Connection tempcon = null;
 		try (Connection connection = DriverManager.getConnection(JDBCConstant.url, JDBCConstant.username,
 				JDBCConstant.password)) {
 
 			tempcon = connection;
-			// connection.setAutoCommit(false);
+			connection.setAutoCommit(false);
 			String query = "insert into webseries(name,noOfEpisodes,streamedIn,gener,yestAgeIndaNodbohudu) values (?,?,?,?,?)";
 			PreparedStatement stm = connection.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
-			ResultSet resultSet = stm.executeQuery();
-			while (resultSet.next()) {
-				createDTOFromResultSetValues(collection, resultSet);
-			}
+
+			collection.forEach(dto -> {
+				int aild = 0;
+				try {
+					stm.setString(1, dto.getW_name());
+					stm.setInt(2, dto.getW_noOfEpisodes());
+					stm.setString(3, dto.getW_streamedIn().toString());
+					stm.setString(4, dto.getW_gener().toString());
+					stm.setInt(5, dto.getW_yestAgeIndaNodbohudu());
+					stm.execute();
+					ResultSet resultset = stm.getGeneratedKeys();
+					if (resultset.next()) {
+						aild = resultset.getInt(1);
+					}
+					dto.setW_id(aild);
+					System.out.println(dto);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
+			connection.commit();
+			col.addAll(collection);
 
 		} catch (SQLException e) {
 
 			e.printStackTrace();
+			try {
+				tempcon.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 
 		}
 
-		return collection;
 	}
 
 	@Override

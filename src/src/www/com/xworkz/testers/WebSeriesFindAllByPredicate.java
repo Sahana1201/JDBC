@@ -11,8 +11,8 @@ public class WebSeriesFindAllByPredicate {
 	public static void main(String[] args) {
 
 		WebSeriesDAO dao = new WebSeriesDAOImpl();
-		Collection<WebSeriesDTO> collection = dao.findall();
-		System.out.println(collection);
+		Collection<WebSeriesDTO> collection = dao.findall(m -> m.getW_noOfEpisodes() > 20);
+		collection.forEach(k -> System.out.println(k));
 
 	}
 

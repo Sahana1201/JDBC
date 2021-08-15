@@ -10,7 +10,7 @@ public interface WebSeriesDAO {
 
 	int save(WebSeriesDTO dto);
 
-	Collection<WebSeriesDTO> saveAll(Collection<WebSeriesDTO> collection);
+	void saveAll(Collection<WebSeriesDTO> collection);
 
 	Collection<WebSeriesDTO> findall();
 

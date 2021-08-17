@@ -1,0 +1,10 @@
+package com.xworkz.customerdetails.jdbcConstant;
+
+public class JDBCConstant {
+	
+	public static final String username = "root";
+	public static final String password = "sahana@123";
+	public static final String url = "jdbc:mysql://localhost:3306/apriltransformers";
+	public static final String fqnOfDriverImpl = "com.mysql.cj.jdbc.Driver";
+
+}
